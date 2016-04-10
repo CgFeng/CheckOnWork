@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--///////////////////请假的Fragment Layout//////////////////////-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.chengang.newcheck.widget.VacateClickView
+        android:id="@+id/lcv_class_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <com.chengang.newcheck.widget.VacateClickView
+        android:id="@+id/lcv_leader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <com.chengang.newcheck.widget.VacateClickView
+        android:id="@+id/lcv_startTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <com.chengang.newcheck.widget.VacateClickView
+        android:id="@+id/lcv_stopTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:text="详细内容:"
+        android:layout_marginTop="10dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_weight="1">
+        <EditText
+            android:id="@+id/et_content"
+            android:layout_width="320dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="10dp"
+            android:gravity="left|top"
+            android:padding="5dp"
+            android:background="@drawable/shape_edittext"
+            android:hint="请输入原因"/>
+
+        <Button
+            android:id="@+id/sumbit"
+            android:layout_width="170dp"
+            android:layout_height="wrap_content"
+            android:text="提交请假"
+            android:textColor="#fff"
+            android:background="@drawable/selector_submit_btn"
+            android:layout_marginTop="40dp"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+</LinearLayout>

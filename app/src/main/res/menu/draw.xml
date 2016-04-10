@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/navItem1"
+            android:icon="@drawable/ic_home_black_18dp"
+            android:title="每日考勤"/>
+        <item
+            android:id="@+id/navItem2"
+            android:icon="@drawable/ic_class_black_18dp"
+            android:title="申请请假"/>
+
+        <item
+            android:id="@+id/navItem3"
+            android:icon="@drawable/ic_chrome_reader_mode_black_18dp"
+            android:title="公司公告"/>
+
+        <item
+            android:id="@+id/navItem4"
+            android:icon="@drawable/ic_question_answer_black_18dp"
+            android:title="我的"/>
+    </group>
+
+</menu>

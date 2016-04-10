@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.inthecheesefactory.lab.designlibrary.CodeLabActivity">
+    <item
+        android:id="@+id/action_choosephoto"
+        android:orderInCategory="100"
+        android:title="选择图片"
+        app:showAsAction="never" />
+</menu>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/F:/AndroidStudioProjects/DrawerLayoutDemo/sample/src/main/res/values/colors.xml -->
+    <eat-comment/>
+    <color name="dark">#FF222222</color>
+    <color name="light">#FFEEEEEE</color>
+    <declare-styleable name="CircleImageView"><attr format="dimension" name="civ_border_width"/><attr format="color" name="civ_border_color"/><attr format="boolean" name="civ_border_overlay"/><attr format="color" name="civ_fill_color"/></declare-styleable>
+    <!-- From: file:/F:/AndroidStudioProjects/DrawerLayoutDemo/sample/src/main/res/values/dimens.xml -->
+    <eat-comment/>
+    <dimen name="base_padding">16dp</dimen>
+    <!-- From: file:/F:/AndroidStudioProjects/DrawerLayoutDemo/sample/src/main/res/values/strings.xml -->
+    <eat-comment/>
+    <string name="app_name">CircleImageView Sample</string>
+    <!-- From: file:/F:/AndroidStudioProjects/DrawerLayoutDemo/sample/src/main/res/values/styles.xml -->
+    <eat-comment/>
+    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+
+    </style>
+</resources>
