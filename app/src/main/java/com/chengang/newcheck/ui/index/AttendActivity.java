@@ -1,11 +1,13 @@
 package com.chengang.newcheck.ui.index;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -30,7 +32,9 @@ import com.amap.api.location.AMapLocationListener;
 import com.amap.api.location.LocationManagerProxy;
 import com.amap.api.location.LocationProviderProxy;
 import com.chengang.drawerlayoutdemo.R;
+import com.chengang.newcheck.widget.SelectPopup;
 
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,26 +58,32 @@ public class AttendActivity extends Fragment implements View.OnClickListener,AMa
     private ProgressDialog pd;
     private LocationManagerProxy mLocationManagerProxy;
 
+    private SelectPopup popup;
+
     private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    updateTime((String) msg.obj);
-                    break;
-            }
-        }
-    };
+    WeakHandler handler;
+    private Activity context;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView=inflater.inflate(R.layout.activity_attend,null);
+        context=getActivity();
         initView();
         initListener();
+        handler=new WeakHandler(context){
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case 0:
+                        updateTime((String) msg.obj);
+                        break;
+                }
+            }
+        };
+
         startClock = true;
         clockThread = new Thread(new ClockThread());
         clockThread.start();
@@ -87,6 +97,7 @@ public class AttendActivity extends Fragment implements View.OnClickListener,AMa
         tv_longitude = (TextView) rootView.findViewById(R.id.tv_longitude);
         tv_latitude = (TextView) rootView.findViewById(R.id.tv_latitude);
         tv_check_time = (TextView) rootView.findViewById(R.id.tv_check_time);
+        popup=new SelectPopup(context);
     }
 
     private void initListener() {
@@ -127,6 +138,7 @@ public class AttendActivity extends Fragment implements View.OnClickListener,AMa
         tvHour.setText(timeStr[0]);
         tvMin.setText(timeStr[1]);
         tvSec.setText(timeStr[2]);
+
     }
 
     /**
@@ -178,24 +190,30 @@ public class AttendActivity extends Fragment implements View.OnClickListener,AMa
      * 考勤类型选择
      */
     private void showCheckDialog() {
-        final ArrayList<String> types = new ArrayList<>();
-        types.add("上班");
-        types.add("下班");
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        final AlertDialog alertDialog = builder.create();
-        View view = View.inflate(getActivity(), R.layout.view_check_list, null);
+       if (popup.getOnPopupItemClickListenr()==null){
+           popup.setOnPopupItemClickListenr(new SelectPopup.OnPopupItemClickListenr() {
+               @Override
+               public void onWorkClick(View v) {
+                   if (v instanceof TextView){
+                       String text= ((TextView) v).getText().toString().trim();
+                       tv_check_time.setText(text);
 
-        ListView lv_check = (ListView) view.findViewById(R.id.lv_check);
-        lv_check.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, types));
-        lv_check.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                tv_check_time.setText(types.get(i));
-                alertDialog.dismiss();
-            }
-        });
-        alertDialog.setView(view);
-        alertDialog.show();
+                   }
+               }
+
+               @Override
+               public void onHomeClick(View v) {
+                   if (v instanceof TextView){
+                       String text= ((TextView) v).getText().toString().trim();
+                       tv_check_time.setText(text);
+
+                   }
+               }
+           });
+       }
+        popup.showPopupWindow();
+
+
     }
 
 
@@ -240,5 +258,19 @@ public class AttendActivity extends Fragment implements View.OnClickListener,AMa
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+
+    static class WeakHandler extends Handler{
+        private final WeakReference<Context> context;
+
+        public WeakHandler(Context context) {
+            this.context=new WeakReference<Context>(context);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+        }
     }
 }
