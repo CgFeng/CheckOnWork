@@ -15,6 +15,7 @@ import com.chengang.newcheck.bean.Login;
 import com.chengang.newcheck.common.DICT;
 import com.chengang.newcheck.http.LoginHttpHelper;
 import com.chengang.newcheck.ui.fragmentMain.IndexFragment;
+import com.chengang.newcheck.ui.index.AttendFragment;
 import com.chengang.newcheck.utils.StringUtil;
 
 import java.util.Observable;
@@ -119,7 +120,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener,
             //登录成功
             StringUtil.myToast(this,DICT.LOGIN_SUCCESS_INFO);
             //跳转到首页
-            Intent toIndex = new Intent(this, IndexFragment.class);
+            Intent toIndex = new Intent(this, MainActivity.class);
             startActivity(toIndex);
         }else{
             //登录失败

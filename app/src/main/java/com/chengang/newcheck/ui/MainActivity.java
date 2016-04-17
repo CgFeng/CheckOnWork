@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,11 +14,14 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 
 import com.chengang.drawerlayoutdemo.R;
+import com.chengang.newcheck.ui.fragmentMain.BaseFragment;
 import com.chengang.newcheck.ui.fragmentMain.FourthFragment;
 import com.chengang.newcheck.ui.fragmentMain.IndexFragment;
-import com.chengang.newcheck.ui.fragmentMain.ThirdFragment;
+import com.chengang.newcheck.ui.fragmentMain.NoticeFragment;
 import com.chengang.newcheck.ui.fragmentMain.VacateFragment;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
+
+import java.util.LinkedList;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -26,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle drawerToggle;
     private Toolbar toolbar;
     private NavigationView navigationView;
+
+    private LinkedList<BaseFragment> fragmentList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
             tintManager.setStatusBarTintColor(getResources().getColor(R.color.colorPrimary));
             tintManager.setStatusBarTintEnabled(true);
         }
+        fragmentList=new LinkedList<>();
 
         initView();
         switchToIndex();
@@ -61,6 +68,18 @@ public class MainActivity extends AppCompatActivity {
         //设置NavigationView点击事件
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         setupDrawerContent(navigationView);
+
+        addFragment2List();
+
+    }
+
+    private void addFragment2List() {
+        //顺序
+        fragmentList.add(new IndexFragment());
+        fragmentList.add(new VacateFragment());
+        fragmentList.add(new NoticeFragment());
+        fragmentList.add(new FourthFragment());
+
 
     }
 
@@ -95,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
      * 第一个fragment页面
      */
     private void switchToIndex() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content,new IndexFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, (Fragment) fragmentList.get(0)).commit();
         toolbar.setTitle("首页");
     }
 
@@ -103,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
      * 第二个fragment页面
      */
     private void switchToSecond() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content,new VacateFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, (Fragment) fragmentList.get(1)).commit();
         toolbar.setTitle("请假");
     }
 
@@ -111,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
      * 第三个fragment页面
      */
     private void switchToThird() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content,new ThirdFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, (Fragment) fragmentList.get(2)).commit();
         toolbar.setTitle("公告");
     }
 
@@ -119,10 +138,18 @@ public class MainActivity extends AppCompatActivity {
      * 第四个fragment页面
      */
     private void switchToSFourth() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content,new FourthFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, (Fragment) fragmentList.get(3)).commit();
         toolbar.setTitle("设置");
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        for (BaseFragment baseFragment : fragmentList) {
+            baseFragment.onFragmentActivityResult(requestCode,resultCode,data);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

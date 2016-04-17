@@ -31,4 +31,17 @@ public class StringUtil {
     public static void myToast(Context context,String content){
         Toast.makeText(context,content,Toast.LENGTH_SHORT).show();
     }
+
+    /**
+     * 校验字符串是否为空
+     * @param str
+     * @return
+     */
+    public static boolean isEmpty(String str) {
+        if(null==str||str.trim().equals("")){
+            return true;
+        }else {
+            return false;
+        }
+    }
 }

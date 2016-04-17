@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,7 +30,7 @@ import java.util.Date;
 /**
  * Created by 陈岗 on 2015/10/22.
  */
-public class VacateFragment extends Fragment implements View.OnClickListener{
+public class VacateFragment extends Fragment implements View.OnClickListener,BaseFragment{
     private View rootView;
     private Button sumbit;
     private EditText etContent;
@@ -286,5 +287,10 @@ public class VacateFragment extends Fragment implements View.OnClickListener{
         } else {
             Toast.makeText(getContext(), "提交成功", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onFragmentActivityResult(int requestCode, int resultCode, Intent data) {
+
     }
 }
