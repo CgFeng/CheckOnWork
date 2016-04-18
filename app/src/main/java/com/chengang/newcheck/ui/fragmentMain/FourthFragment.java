@@ -1,5 +1,6 @@
 package com.chengang.newcheck.ui.fragmentMain;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,7 @@ import com.chengang.drawerlayoutdemo.R;
 /**
  * Created by 陈岗 on 2015/10/22.
  */
-public class FourthFragment extends Fragment {
+public class FourthFragment extends Fragment implements BaseFragment {
 
     private View rootView;
 
@@ -21,5 +22,10 @@ public class FourthFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView=inflater.inflate(R.layout.fragment_fourth,null);
         return rootView;
+    }
+
+    @Override
+    public void onFragmentActivityResult(int requestCode, int resultCode, Intent data) {
+
     }
 }

@@ -8,49 +8,40 @@ import java.io.Serializable;
  * 通知的bean类
  */
 public class Notification implements Serializable {
-    private String imageNotice;//通知的图片
-    private String Head;//通知标题
-    private String Subhead;//通知的副标题
-    private String AddTime;//通知的添加时间
-    private String condition;//通知的等级状态
+    private String title;
+    private String content;
+    private String publishTime;
+    private String noticImage;
 
-    public String getImageNotice() {
-        return imageNotice;
+    public String getTitle() {
+        return title;
     }
 
-    public void setImageNotice(String imageNotice) {
-        this.imageNotice = imageNotice;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getHead() {
-        return Head;
+    public String getContent() {
+        return content;
     }
 
-    public void setHead(String head) {
-        Head = head;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public String getSubhead() {
-        return Subhead;
+    public String getPublishTime() {
+        return publishTime;
     }
 
-    public void setSubhead(String subhead) {
-        Subhead = subhead;
+    public void setPublishTime(String publishTime) {
+        this.publishTime = publishTime;
     }
 
-    public String getAddTime() {
-        return AddTime;
+    public String getNoticImage() {
+        return noticImage;
     }
 
-    public void setAddTime(String addTime) {
-        AddTime = addTime;
-    }
-
-    public String getCondition() {
-        return condition;
-    }
-
-    public void setCondition(String condition) {
-        this.condition = condition;
+    public void setNoticImage(String noticImage) {
+        this.noticImage = noticImage;
     }
 }

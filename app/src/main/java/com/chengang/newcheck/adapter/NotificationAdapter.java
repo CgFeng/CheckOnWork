@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.chengang.drawerlayoutdemo.R;
 import com.chengang.newcheck.bean.Notification;
 
@@ -17,52 +18,46 @@ import java.util.List;
  * Created by 陈岗 on 2015/10/23.
  * 公告适配器
  */
-public class NotificationAdapter extends RecyclerView.Adapter<MyViewHolder> {
-    private Context context;
-    private LayoutInflater inflater;
-    private List<Notification> NoticeList;
+public class NotificationAdapter extends BaseRecyclerViewAdapter<Notification,NotificationAdapter.ViewHolder> {
 
-    public NotificationAdapter(Context context,List<Notification> NoticeList) {
-        this.context=context;
-        this.NoticeList=NoticeList;
-        inflater=LayoutInflater.from(context);
+    public NotificationAdapter(List<Notification> datas, Context mContext) {
+        super(datas, mContext);
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.item_second_fragment,parent,false);
-        MyViewHolder myViewHolder =  new MyViewHolder(view);
-        return myViewHolder;
+    protected int getViewResId() {
+        return R.layout.item_second_fragment;
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
-        holder.imageView.setImageResource(R.mipmap.ic_launcher);
-        holder.tvHead.setText(NoticeList.get(position).getHead());
-        holder.tvSubhead.setText(NoticeList.get(position).getSubhead());
-        holder.tvCondition.setText(NoticeList.get(position).getCondition());
-        holder.tvAddTime.setText(NoticeList.get(position).getAddTime());
+    protected ViewHolder initViewHolder(View view) {
+        return new ViewHolder(view);
     }
 
     @Override
-    public int getItemCount() {
-        return NoticeList.size();
+    protected void onBindData(ViewHolder holder, Notification data, int position) {
+        holder.tvHead.setText(data.getTitle());
+        Glide.with(mContext)
+                .load("http://imglf2.nosdn.127.net/img/NWxuTTNsdXVnVlBMaG1zam5uRkc2OW1Ic09wRjRvQ3pQamZFSGZIdGZwWnkyWmJEZmxRcHlBPT0.jpg?imageView&thumbnail=2000y2000&type=jpg&quality=96&stripmeta=0&type=jpg%7Cwatermark&type=2&text=wqkg6ZmI5bKX5LiN5aeT6ZmIIC8gY2hhbmtvbmcubG9mdGVyLmNvbQ==&font=bXN5aA==&gravity=southwest&dissolve=30&fontsize=680&dx=32&dy=36&stripmeta=0")
+                .into(holder.imageView);
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder{
+        ImageView imageView;
+        TextView tvHead;
+        TextView tvSubhead;
+        TextView tvCondition;
+        TextView tvAddTime;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            imageView = (ImageView) itemView.findViewById(R.id.iv_item);
+            tvHead= (TextView) itemView.findViewById(R.id.tv_head);
+            tvSubhead= (TextView) itemView.findViewById(R.id.tv_subhead);
+            tvCondition= (TextView) itemView.findViewById(R.id.tv_bottom_left);
+            tvAddTime= (TextView) itemView.findViewById(R.id.tv_bottom_right);
+        }
     }
 }
 
-class MyViewHolder extends RecyclerView.ViewHolder{
-    ImageView imageView;
-    TextView tvHead;
-    TextView tvSubhead;
-    TextView tvCondition;
-    TextView tvAddTime;
 
-    public MyViewHolder(View itemView) {
-        super(itemView);
-        imageView = (ImageView) itemView.findViewById(R.id.iv_item);
-        tvHead= (TextView) itemView.findViewById(R.id.tv_head);
-        tvSubhead= (TextView) itemView.findViewById(R.id.tv_subhead);
-        tvCondition= (TextView) itemView.findViewById(R.id.tv_bottom_left);
-        tvAddTime= (TextView) itemView.findViewById(R.id.tv_bottom_right);
-    }
-}

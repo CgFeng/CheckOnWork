@@ -5,14 +5,20 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,19 +37,37 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.location.LocationManagerProxy;
 import com.amap.api.location.LocationProviderProxy;
+import com.amap.api.maps.AMapUtils;
+import com.amap.api.maps.model.LatLng;
 import com.chengang.drawerlayoutdemo.R;
+import com.chengang.newcheck.adapter.PhotoAdapter;
+import com.chengang.newcheck.bean.AttendInfo;
+import com.chengang.newcheck.bean.PhotoUploadTest;
+import com.chengang.newcheck.common.DICT;
+import com.chengang.newcheck.common.STATIC_INFO;
+import com.chengang.newcheck.http.AttendHttpHelper;
+import com.chengang.newcheck.ui.LoginActivity;
+import com.chengang.newcheck.ui.fragmentMain.BaseFragment;
+import com.chengang.newcheck.ui.fragmentMain.IndexFragment;
+import com.chengang.newcheck.utils.CameraUtils;
+import com.chengang.newcheck.utils.StringUtil;
 import com.chengang.newcheck.widget.SelectPopup;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * 提交考勤
  * Created by 陈岗 on 2015/10/22.
  */
-public class AttendActivity extends Fragment implements View.OnClickListener,AMapLocationListener {
+public class AttendFragment extends Fragment implements View.OnClickListener,AMapLocationListener,BaseFragment,Observer {
     private Thread clockThread;
     private boolean startClock = true;
     private View rootView;
@@ -53,17 +77,29 @@ public class AttendActivity extends Fragment implements View.OnClickListener,AMa
     private TextView tv_check_time;
     private TextView tv_longitude;
     private TextView tv_latitude;
+    private EditText etOthers;
+    private ImageButton ibTakePhoto;
     private Double geoLat;
     private Double geoLng;
     private ProgressDialog pd;
+    private Button btnSubmit;
+    private ProgressDialog pbDialog;
     private LocationManagerProxy mLocationManagerProxy;
 
     private SelectPopup popup;
-
+    private GridView gv_photo;
+    private PhotoAdapter photoAdapter;
+    private static final ArrayList<String> photoList = new ArrayList<String>();
     private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+
+    public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1;
+    public static File appRootFile;//照片的根目录
+    public static Uri imageUri;//图片的uri
 
     WeakHandler handler;
     private Activity context;
+
+    private String typeId;
 
 
     @Nullable
@@ -72,6 +108,7 @@ public class AttendActivity extends Fragment implements View.OnClickListener,AMa
         rootView=inflater.inflate(R.layout.activity_attend,null);
         context=getActivity();
         initView();
+        initGridView();
         initListener();
         handler=new WeakHandler(context){
             @Override
@@ -94,14 +131,32 @@ public class AttendActivity extends Fragment implements View.OnClickListener,AMa
         tvHour = (TextView) rootView.findViewById(R.id.tv_hour);
         tvMin = (TextView) rootView.findViewById(R.id.tv_min);
         tvSec = (TextView) rootView.findViewById(R.id.tv_sec);
+        etOthers = (EditText) rootView.findViewById(R.id.et_ps);
         tv_longitude = (TextView) rootView.findViewById(R.id.tv_longitude);
         tv_latitude = (TextView) rootView.findViewById(R.id.tv_latitude);
         tv_check_time = (TextView) rootView.findViewById(R.id.tv_check_time);
+        ibTakePhoto = (ImageButton) rootView.findViewById(R.id.ib_camera);
+        gv_photo = (GridView) rootView.findViewById(R.id.gv_photo);
+        btnSubmit = (Button) rootView.findViewById(R.id.btn_submit);
         popup=new SelectPopup(context);
     }
 
+    private void initGridView() {
+        photoAdapter = new PhotoAdapter(getContext(), photoList);
+        gv_photo.setAdapter(photoAdapter);
+    }
+
     private void initListener() {
+        btnSubmit.setOnClickListener(this);
         tv_check_time.setOnClickListener(this);
+        ibTakePhoto.setOnClickListener(this);
+    }
+
+    private void initProgressDialog() {
+        pbDialog = new ProgressDialog(getContext());
+        pbDialog.setTitle("正在提交");
+        pbDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        pbDialog.setMax(100);
     }
 
     /*
@@ -141,6 +196,41 @@ public class AttendActivity extends Fragment implements View.OnClickListener,AMa
 
     }
 
+    @Override
+    public void onFragmentActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case CameraUtils.CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE:
+                getActivity();
+                if (resultCode == Activity.RESULT_OK) {
+                    photoList.add(CameraUtils.imageUri.getPath());
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 10;
+                    Bitmap bitmap = BitmapFactory.decodeFile(CameraUtils.imageUri.getPath(), options);
+                    try {
+                        bitmap.compress(Bitmap.CompressFormat.JPEG,80,new FileOutputStream(CameraUtils.imageUri.getPath()));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    photoAdapter.notifyDataSetChanged();
+                }
+                break;
+        }
+
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        Log.i("222222222222222",data.toString());
+        if(data instanceof String) {
+            pbDialog.dismiss();
+            pbDialog = null;
+            StringUtil.myToast(getContext(), data.toString());
+        }else{
+            int cur = (int) data;
+            pbDialog.setProgress(cur);
+        }
+    }
+
     /**
      * 时钟线程
      */
@@ -164,7 +254,44 @@ public class AttendActivity extends Fragment implements View.OnClickListener,AMa
             case R.id.tv_check_time:
                 showCheckDialog();
                 break;
+            case R.id.ib_camera:
+                CameraUtils.takePhoto(getActivity());
+                break;
+            case R.id.btn_submit:
+                if (StringUtil.isEmpty(STATIC_INFO.EMPLOYEE_ID)){
+                    Intent toLogin = new Intent(getActivity(), LoginActivity.class);
+                    startActivity(toLogin);
+                    return;
+                }
+                if (photoList.size()<=0){
+                    StringUtil.myToast(getActivity(),"亲，至少拍一张照片");
+                    return;
+                }
+                if(pbDialog==null){
+                    initProgressDialog();
+                }
+                pbDialog.show();
+                AttendHttpHelper.submit(arrangeAttendInfo(),this);
+                break;
         }
+    }
+
+    private AttendInfo arrangeAttendInfo() {
+        AttendInfo attendInfo = null;
+        //计算距离
+        int distance = (int) AMapUtils.calculateLineDistance(
+                new LatLng(geoLat, geoLng),
+                new LatLng(Double.valueOf(STATIC_INFO.COMPANY_LATITUDE), Double.valueOf(STATIC_INFO.COMPANY_LONGITUDE)));
+        attendInfo = new AttendInfo(STATIC_INFO.COMPANY_ID,
+                                    STATIC_INFO.EMPLOYEE_ID,
+                                    typeId,
+                                    String.valueOf(geoLat),
+                                    String.valueOf(geoLng),
+                                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis()),
+                                    String.valueOf(distance),
+                                    etOthers.getText().toString(),
+                                    photoList);
+        return attendInfo;
     }
 
     @Override
@@ -194,27 +321,27 @@ public class AttendActivity extends Fragment implements View.OnClickListener,AMa
            popup.setOnPopupItemClickListenr(new SelectPopup.OnPopupItemClickListenr() {
                @Override
                public void onWorkClick(View v) {
-                   if (v instanceof TextView){
-                       String text= ((TextView) v).getText().toString().trim();
+                   if (v instanceof TextView) {
+                       String text = ((TextView) v).getText().toString().trim();
                        tv_check_time.setText(text);
-
+                       typeId = text;
                    }
                }
 
                @Override
                public void onHomeClick(View v) {
-                   if (v instanceof TextView){
-                       String text= ((TextView) v).getText().toString().trim();
+                   if (v instanceof TextView) {
+                       String text = ((TextView) v).getText().toString().trim();
                        tv_check_time.setText(text);
-
+                       typeId = text;
                    }
                }
            });
        }
         popup.showPopupWindow();
-
-
     }
+
+
 
 
     @Override
@@ -240,25 +367,21 @@ public class AttendActivity extends Fragment implements View.OnClickListener,AMa
         mLocationManagerProxy = null;
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-
+    /**
+     * 校验是否可以提交
+     */
+    private void validateSubmit(){
+        if (StringUtil.isEmpty(STATIC_INFO.EMPLOYEE_ID)){
+            Intent toLogin = new Intent(getActivity(), LoginActivity.class);
+            startActivity(toLogin);
+            return;
+        }
+        if (photoList.size()<=0){
+            StringUtil.myToast(getActivity(),"亲，至少拍一张照片");
+            return;
+        }
     }
 
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
 
 
     static class WeakHandler extends Handler{
@@ -272,5 +395,26 @@ public class AttendActivity extends Fragment implements View.OnClickListener,AMa
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
         }
+    }
+
+
+
+
+    /*-------------------------下面的方法不常用---------------------*/
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }

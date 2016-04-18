@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +14,7 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.chengang.drawerlayoutdemo.R;
 
@@ -27,10 +29,15 @@ public class CameraUtils {
     public static final int CHOOSE_FROM_CAMERA = 1;
     public static final int CHOOSE_FROM_ALBUM = 2;
     public static final int PHOTO_CROP = 3;
+
     public static Uri imgUri;
     public static File img;
     public static File sdRoot;
     public static File mPhotos;
+
+    public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1;
+    public static File appRootFile;//照片的根目录
+    public static Uri imageUri;//图片的uri
 
     /**
      * 调用摄像头
@@ -44,6 +51,7 @@ public class CameraUtils {
             if (!mPhotos.exists()) {
                 mPhotos.mkdirs();
             }
+
 
             //为每张图片起一个唯一的名字
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
@@ -153,5 +161,43 @@ public class CameraUtils {
         }
         cursor.close();
         return res;
+    }
+
+    /*---------------------------new method for bishe----------------------------*/
+    /**
+     * 判断设备是否有摄像头
+     */
+    public static boolean checkCameraHardware(Context context) {
+        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+    }
+
+    /*
+     * 检查外部存储是否可用
+     */
+    public static boolean checkExternalStorageState() {
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+    }
+
+    /*
+     * 照相
+     */
+    public static void takePhoto(Activity activity) {
+        if (checkCameraHardware(activity) && checkExternalStorageState()) {
+            appRootFile = new File(Environment.getExternalStorageDirectory(), "checkOnWorkApp");
+            if (!appRootFile.exists()) {
+                appRootFile.mkdirs();
+            }
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            //为每张图片起一个唯一的名字
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+            String imageName = sdf.format(new Date()) + ".jpg";
+            //创建保存图片的对象
+            imageUri = Uri.fromFile(new File(appRootFile, imageName));
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+
+            activity.startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+        } else {
+            Toast.makeText(activity, "摄像头或外部存储不可用", Toast.LENGTH_SHORT).show();
+        }
     }
 }

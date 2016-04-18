@@ -2,6 +2,7 @@ package com.chengang.newcheck.http;
 
 import com.chengang.newcheck.bean.Login;
 import com.chengang.newcheck.common.DICT;
+import com.chengang.newcheck.common.STATIC_INFO;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -22,7 +23,8 @@ public class LoginHttpHelper extends BaseHttpHelper {
 
     /**
      * 登录
-     * @param login 登录信息
+     *
+     * @param login    登录信息
      * @param observer
      */
     public static void submitLogin(Login login, final Observer observer) {
@@ -42,15 +44,30 @@ public class LoginHttpHelper extends BaseHttpHelper {
                     try {
                         String s = new String(responseBody);
                         System.out.println(s);
-                        JSONObject json = new JSONObject(s);
-                        if (json.getBoolean("success")) {
+                        JSONObject userInfo = new JSONObject(s);
+                        if (userInfo.getBoolean("success")) {
                             observableHelper.setChanged();
+                            markDownUserInfo(userInfo);
                             observableHelper.notifyObservers(DICT.LOGIN_SUCCESS);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+            }
+
+            /**
+             * 记录登录后员工的信息
+             */
+            private void markDownUserInfo(JSONObject userInfo) {
+                STATIC_INFO.COMPANY_ID = userInfo.optString("companyId");
+                STATIC_INFO.COMPANY_NAME = userInfo.optString("companyName");
+                STATIC_INFO.DEPARTMENT_NAME = userInfo.optString("departmentName");
+                STATIC_INFO.EMPLOYEE_ID = userInfo.optString("employeeId");
+                STATIC_INFO.COMPANY_NAME = userInfo.optString("employeeName");
+                STATIC_INFO.EMPLOYEE_MOBILE = userInfo.optString("employeeMobile");
+                STATIC_INFO.COMPANY_LATITUDE = userInfo.optString("companyLatitude");
+                STATIC_INFO.COMPANY_LONGITUDE = userInfo.optString("companyLongitude");
             }
 
             @Override
