@@ -37,6 +37,7 @@ public class NotificationAdapter extends BaseRecyclerViewAdapter<Notification,No
     @Override
     protected void onBindData(ViewHolder holder, Notification data, int position) {
         holder.tvHead.setText(data.getTitle());
+        holder.tvCondition.setText(data.getContent());
         Glide.with(mContext)
                 .load("http://imglf2.nosdn.127.net/img/NWxuTTNsdXVnVlBMaG1zam5uRkc2OW1Ic09wRjRvQ3pQamZFSGZIdGZwWnkyWmJEZmxRcHlBPT0.jpg?imageView&thumbnail=2000y2000&type=jpg&quality=96&stripmeta=0&type=jpg%7Cwatermark&type=2&text=wqkg6ZmI5bKX5LiN5aeT6ZmIIC8gY2hhbmtvbmcubG9mdGVyLmNvbQ==&font=bXN5aA==&gravity=southwest&dissolve=30&fontsize=680&dx=32&dy=36&stripmeta=0")
                 .into(holder.imageView);

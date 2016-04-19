@@ -51,6 +51,7 @@ import com.chengang.newcheck.ui.fragmentMain.BaseFragment;
 import com.chengang.newcheck.ui.fragmentMain.IndexFragment;
 import com.chengang.newcheck.utils.CameraUtils;
 import com.chengang.newcheck.utils.StringUtil;
+import com.chengang.newcheck.utils.thread.ThreadPoolManager;
 import com.chengang.newcheck.widget.SelectPopup;
 
 import java.io.File;
@@ -122,8 +123,9 @@ public class AttendFragment extends Fragment implements View.OnClickListener,AMa
         };
 
         startClock = true;
-        clockThread = new Thread(new ClockThread());
-        clockThread.start();
+//        clockThread = new Thread(new ClockThread());
+//        clockThread.start();
+        ThreadPoolManager.execute(new ClockThread());
         return rootView;
     }
 
@@ -324,7 +326,7 @@ public class AttendFragment extends Fragment implements View.OnClickListener,AMa
                    if (v instanceof TextView) {
                        String text = ((TextView) v).getText().toString().trim();
                        tv_check_time.setText(text);
-                       typeId = text;
+                       typeId = "2";
                    }
                }
 
@@ -333,7 +335,7 @@ public class AttendFragment extends Fragment implements View.OnClickListener,AMa
                    if (v instanceof TextView) {
                        String text = ((TextView) v).getText().toString().trim();
                        tv_check_time.setText(text);
-                       typeId = text;
+                       typeId = "1";
                    }
                }
            });

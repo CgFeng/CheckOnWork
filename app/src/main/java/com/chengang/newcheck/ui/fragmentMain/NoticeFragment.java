@@ -19,6 +19,9 @@ import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -36,6 +39,7 @@ public class NoticeFragment extends Fragment implements BaseFragment,Observer{
     private List<Notification> noticeList=new ArrayList<Notification>();
 
 
+
     private View rootView;
 
     @Nullable
@@ -46,6 +50,11 @@ public class NoticeFragment extends Fragment implements BaseFragment,Observer{
         notificationAdapter=new NotificationAdapter(noticeList,getActivity());
         mRecyclerView.setAdapter(notificationAdapter);
         mRecyclerView.setLayoutManager(linearLayoutManager);
+        NoticeHttpHelper.getNoticeData(NoticeFragment.this);
+
+        materialRefreshLayout.autoRefresh();
+
+
 
         materialRefreshLayout.setMaterialRefreshListener(new MaterialRefreshListener() {
             @Override
@@ -75,7 +84,8 @@ public class NoticeFragment extends Fragment implements BaseFragment,Observer{
     @Override
     public void update(Observable observable, Object data) {
         if (data instanceof List){
-            noticeList = (List<Notification>) data;
+            noticeList.clear();
+            noticeList.addAll((Collection<? extends Notification>) data);
             notificationAdapter.notifyDataSetChanged();
             materialRefreshLayout.finishRefresh();
         }

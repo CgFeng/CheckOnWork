@@ -33,7 +33,7 @@ public class AttendHttpHelper extends BaseHttpHelper {
         RequestParams params = new RequestParams();
         for (int i = 0; i < attendInfo.getphotoList().size(); i++) {
             try {
-                params.put("file", new File(attendInfo.getphotoList().get(i)));
+                params.put("upload"+i, new File(attendInfo.getphotoList().get(i)));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

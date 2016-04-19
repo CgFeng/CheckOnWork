@@ -32,7 +32,7 @@ public class NoticeHttpHelper extends BaseHttpHelper{
      */
     public static void getNoticeData(final Observer observer) {
 
-        String targetUrl = BASEURL + "employee/notice";
+        String targetUrl = BASEURL + "notice";
 
         RequestParams params = new RequestParams();
         params.put("companyId", "3");
@@ -43,16 +43,18 @@ public class NoticeHttpHelper extends BaseHttpHelper{
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 if (statusCode == 200) {
-                    JSONArray jsonArray = null;
                     try {
                         List<Notification> notificationList = new ArrayList<Notification>();
-                        jsonArray = new JSONArray(new String(responseBody));
+                        JSONArray jsonArray = new JSONArray(new String(responseBody));
                         JSONObject jsonObject=null;
                         Notification notification=null;
                         for(int i =0;i<jsonArray.length();i++){
+                            notification = new Notification();
                             jsonObject = jsonArray.getJSONObject(i);
-                            notification.setTitle(jsonObject.optString("title"));
-                            notification.setContent(jsonObject.optString("content"));
+                            String title = jsonObject.optString("title");
+                            String content = jsonObject.optString("content");
+                            notification.setTitle(title);
+                            notification.setContent(content);
                             notificationList.add(notification);
                         }
                         if (notificationList.size()>0){

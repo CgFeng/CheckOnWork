@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.chengang.drawerlayoutdemo.R;
 import com.chengang.newcheck.bean.Login;
@@ -31,6 +32,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener,
     private String password;
     private Button btn_login;
     private Toolbar toolbar;
+    private ProgressBar progressBar;
 
     @Override 
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener,
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         etAccount = (EditText) findViewById(R.id.et_login_phone);
         etPassword = (EditText) findViewById(R.id.et_login_password);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
         btn_login = (Button) findViewById(R.id.btn_login);
         btn_login.setOnClickListener(this);
     }
@@ -92,6 +95,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener,
             focusView.requestFocus();
         } else {
             //请求服务器的代买写在这里
+            progressBar.setVisibility(View.VISIBLE);
             asyncLogin(new Login(account,password));
         }
     }
@@ -117,6 +121,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener,
     @Override
     public void update(Observable observable, Object data) {
         if((StringUtil.isSame((String) data, DICT.LOGIN_SUCCESS))){
+            progressBar.setVisibility(View.GONE);
             //登录成功
             StringUtil.myToast(this,DICT.LOGIN_SUCCESS_INFO);
             //跳转到首页
@@ -124,6 +129,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener,
             startActivity(toIndex);
         }else{
             //登录失败
+            progressBar.setVisibility(View.GONE);
             StringUtil.myToast(this,DICT.LOGIN_FAILURE_INFO);
         }
     }
