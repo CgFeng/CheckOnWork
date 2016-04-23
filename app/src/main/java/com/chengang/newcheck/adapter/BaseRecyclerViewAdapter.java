@@ -22,7 +22,7 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends RecyclerView.ViewHol
     public BaseRecyclerViewAdapter(List<T> datas, Context mContext) {
         this.datas = datas;
         this.mContext = mContext;
-        mLayoutInflater =  LayoutInflater.from(mContext);;
+        mLayoutInflater =  LayoutInflater.from(mContext);
     }
 
     @Override

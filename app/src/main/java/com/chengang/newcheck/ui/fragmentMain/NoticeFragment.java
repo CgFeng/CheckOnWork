@@ -4,16 +4,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.chengang.newcheck.adapter.BaseRecyclerViewAdapter;
 import com.chengang.newcheck.adapter.NotificationAdapter;
 import com.chengang.drawerlayoutdemo.R;
 import com.chengang.newcheck.bean.Notification;
 import com.chengang.newcheck.http.NoticeHttpHelper;
+import com.chengang.newcheck.ui.NoticeDetailActivity;
 import com.cjj.MaterialHeadListener;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
@@ -30,14 +33,13 @@ import java.util.Observer;
  * 公告通知
  * Created by 陈岗 on 2015/10/22.
  */
-public class NoticeFragment extends Fragment implements BaseFragment,Observer{
+public class NoticeFragment extends Fragment implements BaseFragment,Observer,BaseRecyclerViewAdapter.OnRecyclerViewItemClickListener {
 
     private RecyclerView mRecyclerView;
     private NotificationAdapter notificationAdapter;
     private LinearLayoutManager linearLayoutManager;
     private MaterialRefreshLayout materialRefreshLayout;
-    private List<Notification> noticeList=new ArrayList<Notification>();
-
+    private List<Notification> noticeList = new ArrayList<Notification>();
 
 
     private View rootView;
@@ -45,15 +47,15 @@ public class NoticeFragment extends Fragment implements BaseFragment,Observer{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView=inflater.inflate(R.layout.fragment_third,null);
+        rootView = inflater.inflate(R.layout.fragment_third, null);
         initView();
-        notificationAdapter=new NotificationAdapter(noticeList,getActivity());
+        notificationAdapter = new NotificationAdapter(noticeList, getActivity());
+        notificationAdapter.setonRecyclerViewItemClickListener(this);
         mRecyclerView.setAdapter(notificationAdapter);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         NoticeHttpHelper.getNoticeData(NoticeFragment.this);
 
         materialRefreshLayout.autoRefresh();
-
 
 
         materialRefreshLayout.setMaterialRefreshListener(new MaterialRefreshListener() {
@@ -70,10 +72,10 @@ public class NoticeFragment extends Fragment implements BaseFragment,Observer{
         return rootView;
     }
 
-    private void initView(){
+    private void initView() {
         materialRefreshLayout = (MaterialRefreshLayout) rootView.findViewById(R.id.refresh);
-        mRecyclerView= (RecyclerView) rootView.findViewById(R.id.recyclerview);
-        linearLayoutManager=new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
+        linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
     }
 
     @Override
@@ -83,11 +85,20 @@ public class NoticeFragment extends Fragment implements BaseFragment,Observer{
 
     @Override
     public void update(Observable observable, Object data) {
-        if (data instanceof List){
+        if (data instanceof List) {
             noticeList.clear();
             noticeList.addAll((Collection<? extends Notification>) data);
             notificationAdapter.notifyDataSetChanged();
             materialRefreshLayout.finishRefresh();
         }
     }
+
+    @Override
+    public void onRecyclerViewItemClick(View v, Object data) {
+        Intent toDetail = new Intent(getContext(),NoticeDetailActivity.class);
+        Notification notification = (Notification) data;
+        toDetail.putExtra("noticeDetail", notification);
+        startActivity(toDetail);
+    }
 }
+

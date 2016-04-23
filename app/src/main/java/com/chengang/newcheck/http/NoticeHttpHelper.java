@@ -4,6 +4,7 @@ import com.chengang.newcheck.bean.Login;
 import com.chengang.newcheck.bean.Notification;
 import com.chengang.newcheck.common.DICT;
 import com.chengang.newcheck.common.STATIC_INFO;
+import com.chengang.newcheck.utils.DateUtil;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -53,8 +54,10 @@ public class NoticeHttpHelper extends BaseHttpHelper{
                             jsonObject = jsonArray.getJSONObject(i);
                             String title = jsonObject.optString("title");
                             String content = jsonObject.optString("content");
+                            String publishTime = jsonObject.optString("publishTime");
                             notification.setTitle(title);
                             notification.setContent(content);
+                            notification.setPublishTime(DateUtil.date2String(Long.valueOf(publishTime),"yyyy-MM-dd"));
                             notificationList.add(notification);
                         }
                         if (notificationList.size()>0){
