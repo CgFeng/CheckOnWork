@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.chengang.drawerlayoutdemo.R;
 import com.chengang.newcheck.bean.Notification;
 import com.chengang.newcheck.ui.NoticeDetailActivity;
+import com.chengang.newcheck.utils.ScreenUtils;
 
 import java.util.List;
 
@@ -21,6 +23,9 @@ import java.util.List;
  * 公告适配器
  */
 public class NotificationAdapter extends BaseRecyclerViewAdapter<Notification,NotificationAdapter.ViewHolder>{
+
+    private int ANIMATED_ITEMS_COUNT=6;
+    private int lastAnimatedPosition=-1;
 
     public NotificationAdapter(List<Notification> datas, Context mContext) {
         super(datas, mContext);
@@ -38,12 +43,33 @@ public class NotificationAdapter extends BaseRecyclerViewAdapter<Notification,No
 
     @Override
     protected void onBindData(ViewHolder holder, Notification data, int position) {
+        runEnterAnimation(holder.itemView,position);
         holder.tvHead.setText(data.getTitle());
         holder.tvCondition.setText(data.getContent());
         holder.tvAddTime.setText(data.getPublishTime());
         Glide.with(mContext)
                 .load("http://imglf2.nosdn.127.net/img/NWxuTTNsdXVnVlBMaG1zam5uRkc2OW1Ic09wRjRvQ3pQamZFSGZIdGZwWnkyWmJEZmxRcHlBPT0.jpg?imageView&thumbnail=2000y2000&type=jpg&quality=96&stripmeta=0&type=jpg%7Cwatermark&type=2&text=wqkg6ZmI5bKX5LiN5aeT6ZmIIC8gY2hhbmtvbmcubG9mdGVyLmNvbQ==&font=bXN5aA==&gravity=southwest&dissolve=30&fontsize=680&dx=32&dy=36&stripmeta=0")
                 .into(holder.imageView);
+    }
+
+    /**
+     * item进入时候的动画
+     */
+    private void runEnterAnimation(View view, int position) {
+        if (position >= ANIMATED_ITEMS_COUNT - 1) {
+            return;
+        }
+
+        if (position > lastAnimatedPosition) {
+            lastAnimatedPosition = position;
+            view.setTranslationY(ScreenUtils.getScreenHeight(mContext));//把item移出屏幕
+            view.animate()
+                    .translationY(0)
+                    .setStartDelay(100 * position)
+                    .setInterpolator(new DecelerateInterpolator(3.f))
+                    .setDuration(800)
+                    .start();
+        }
     }
 
 

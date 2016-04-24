@@ -47,12 +47,12 @@ public class AttendPopup extends BasePopupWindow implements View.OnClickListener
 
     @Override
     protected Animation getShowAnimation() {
-        return null;
+        return getDefaultScaleAnimation();
     }
 
     @Override
     public Animator getShowAnimator() {
-        return getDefaultSlideFromBottomAnimationSet();
+        return null;
     }
 
     @Override
