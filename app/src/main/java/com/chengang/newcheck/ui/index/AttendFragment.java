@@ -50,6 +50,7 @@ import com.chengang.newcheck.ui.LoginActivity;
 import com.chengang.newcheck.ui.fragmentMain.BaseFragment;
 import com.chengang.newcheck.ui.fragmentMain.IndexFragment;
 import com.chengang.newcheck.utils.CameraUtils;
+import com.chengang.newcheck.utils.DateUtil;
 import com.chengang.newcheck.utils.StringUtil;
 import com.chengang.newcheck.utils.thread.ThreadPoolManager;
 import com.chengang.newcheck.widget.SelectPopup;
@@ -222,7 +223,7 @@ public class AttendFragment extends Fragment implements View.OnClickListener,AMa
 
     @Override
     public void update(Observable observable, Object data) {
-        Log.i("222222222222222",data.toString());
+        Log.i("222222222222222", data.toString());
         if(data instanceof String) {
             pbDialog.dismiss();
             pbDialog = null;
@@ -280,6 +281,26 @@ public class AttendFragment extends Fragment implements View.OnClickListener,AMa
 
     private AttendInfo arrangeAttendInfo() {
         AttendInfo attendInfo = null;
+        //计算考勤的状态
+        String attendTag = null;
+        if (typeId.equals("1")){
+            //上班
+            String attendTime = DateUtil.date2String(System.currentTimeMillis(),"yyyy-MM-dd")+" 09:00:00";
+            if (System.currentTimeMillis()<=DateUtil.string2Date(attendTime, "yyyy-MM-dd HH:mm:ss").getTime()){
+                attendTag = DICT.ATTEND_NORMAL;
+            }else{
+                attendTag = DICT.ATTEND_LATE;
+            }
+        }else{
+            //下班
+            String attendTime = DateUtil.date2String(System.currentTimeMillis(),"yyyy-MM-dd")+" 18:00:00";
+            if (System.currentTimeMillis()>=DateUtil.string2Date(attendTime, "yyyy-MM-dd HH:mm:ss").getTime()){
+                attendTag = DICT.ATTEND_NORMAL;
+            }else{
+                attendTag = DICT.ATTEND_ZAOTUI;
+            }
+        }
+
         //计算距离
         int distance = (int) AMapUtils.calculateLineDistance(
                 new LatLng(geoLat, geoLng),
@@ -292,6 +313,7 @@ public class AttendFragment extends Fragment implements View.OnClickListener,AMa
                                     new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis()),
                                     String.valueOf(distance),
                                     etOthers.getText().toString(),
+                                    attendTag,
                                     photoList);
         return attendInfo;
     }
@@ -326,7 +348,7 @@ public class AttendFragment extends Fragment implements View.OnClickListener,AMa
                    if (v instanceof TextView) {
                        String text = ((TextView) v).getText().toString().trim();
                        tv_check_time.setText(text);
-                       typeId = "2";
+                       typeId = "1";//上班
                    }
                }
 
@@ -335,7 +357,7 @@ public class AttendFragment extends Fragment implements View.OnClickListener,AMa
                    if (v instanceof TextView) {
                        String text = ((TextView) v).getText().toString().trim();
                        tv_check_time.setText(text);
-                       typeId = "1";
+                       typeId = "2";//下班
                    }
                }
            });

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@mipmap/plugin_camera_bt_takepic_on" android:state_pressed="true" />
-    <item android:drawable="@mipmap/plugin_camera_bt_takepic_on" />
+    <item android:drawable="@mipmap/camera_vacate" android:state_pressed="true" />
+    <item android:drawable="@mipmap/camera_vacate" />
 </selector>

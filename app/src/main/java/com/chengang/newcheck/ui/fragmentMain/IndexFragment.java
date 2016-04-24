@@ -47,7 +47,7 @@ public class IndexFragment extends Fragment implements BaseFragment{
     private void setupViewPager(ViewPager mViewPager) {
         MyPagerAdapter adapter = new MyPagerAdapter(getChildFragmentManager());
         adapter.addFragment(mAttendActivity, "每日考勤");
-        adapter.addFragment(new index2(), "每日一图");
+        adapter.addFragment(new index2(), "请休假");
         adapter.addFragment(new index3(), "考勤提醒");
         mViewPager.setAdapter(adapter);
     }

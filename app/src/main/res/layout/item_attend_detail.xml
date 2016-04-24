@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_popup_attend"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@color/white"
+        >
+        <TextView
+            android:id="@+id/tv_attend_time"
+            android:text="2015-10-24 08:55"
+            style="@style/checkText"
+            />
+
+        <TextView
+            android:id="@+id/tv1"
+            android:text="类别:"
+            android:layout_marginTop="8dp"
+            android:layout_below="@+id/tv_attend_time"
+            style="@style/checkText" />
+
+        <TextView
+            android:id="@+id/tv_attend_category"
+            style="@style/checkText"
+            android:text="上班"
+            android:layout_marginLeft="10dp"
+            android:layout_alignBaseline="@+id/tv1"
+            android:layout_toRightOf="@+id/tv1"/>
+
+        <TextView
+            android:id="@+id/tv2"
+            android:text="距离公司的位置:"
+            android:layout_marginTop="8dp"
+            style="@style/checkText"
+            android:layout_below="@+id/tv1"/>
+
+        <TextView
+            android:id="@+id/tv_attend_distance"
+            android:text="50米"
+            style="@style/checkText"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/tv2"
+            android:layout_alignBaseline="@+id/tv2"/>
+
+        <TextView
+            android:id="@+id/tv_attend_desc"
+            android:text="上班"
+            style="@style/checkText"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@+id/tv_attend_distance"
+            android:layout_alignBaseline="@+id/tv_attend_distance"/>
+
+        <TextView
+            android:id="@+id/tv3"
+            android:layout_marginTop="8dp"
+            android:text="备注:"
+            style="@style/checkText"
+            android:layout_below="@+id/tv2"/>
+
+        <TextView
+            android:id="@+id/tv_attend_others"
+            android:layout_marginTop="8dp"
+            android:text="今天天气不错"
+            style="@style/checkText"
+            android:layout_below="@+id/tv3"/>
+        <GridView
+            android:id="@+id/gv_attend_photo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_below="@+id/tv_attend_others"
+            android:columnWidth="90dp"
+            android:gravity="center"
+            android:horizontalSpacing="10dp"
+            android:numColumns="3"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="10dp" >
+
+        </GridView>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

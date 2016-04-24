@@ -15,9 +15,10 @@ public class AttendInfo {
     private String time;//考勤时间,格式如下2015-11-10 15:08:00
     private String distance;
     private String others;
+    private String attendTag;//考勤标记
     private ArrayList<String> photoList;
 
-    public AttendInfo(String companyId, String employeeId, String typeId, String latitude, String longitude, String time, String distance, String others, ArrayList<String> photoList) {
+    public AttendInfo(String companyId, String employeeId, String typeId, String latitude, String longitude, String time, String distance, String others,String attendTag, ArrayList<String> photoList) {
         this.companyId = companyId;
         this.employeeId = employeeId;
         this.typeId = typeId;
@@ -26,6 +27,7 @@ public class AttendInfo {
         this.time = time;
         this.distance = distance;
         this.others = others;
+        this.attendTag = attendTag;
         this.photoList = photoList;
     }
 
@@ -91,6 +93,14 @@ public class AttendInfo {
 
     public void setOthers(String others) {
         this.others = others;
+    }
+
+    public String getAttendTag() {
+        return attendTag;
+    }
+
+    public void setAttendTag(String attendTag) {
+        this.attendTag = attendTag;
     }
 
     public ArrayList<String> getphotoList() {

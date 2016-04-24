@@ -108,6 +108,7 @@ public class AttendHttpHelper extends BaseHttpHelper {
         params.put("longitude",attendInfo.getLongitude());
         params.put("distance",attendInfo.getDistance());
         params.put("others", attendInfo.getOthers());
+        params.put("flag",attendInfo.getAttendTag());
         String pics = attendInfo.getphotoList().toString();
         System.out.println(pics);
         params.put("pics", pics);

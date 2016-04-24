@@ -8,7 +8,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,277 +23,101 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.chengang.drawerlayoutdemo.R;
+import com.chengang.newcheck.adapter.AttendDetailAdapter;
+import com.chengang.newcheck.bean.AttendDetailInfo;
+import com.chengang.newcheck.bean.Notification;
+import com.chengang.newcheck.common.DICT;
+import com.chengang.newcheck.common.STATIC_INFO;
+import com.chengang.newcheck.http.AttendDetailHttpHelper;
+import com.chengang.newcheck.utils.DateUtil;
+import com.chengang.newcheck.widget.AttendPopup;
 import com.chengang.newcheck.widget.VacateClickView;
+import com.google.gson.Gson;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
+import com.prolificinteractive.materialcalendarview.OnMonthChangedListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by 陈岗 on 2015/10/22.
  */
-public class VacateFragment extends Fragment implements View.OnClickListener,BaseFragment{
+public class VacateFragment extends Fragment implements BaseFragment,OnDateSelectedListener, OnMonthChangedListener,Observer {
     private View rootView;
-    private Button sumbit;
-    private EditText etContent;
-    private VacateClickView vacateType;        // 请假类型
-    private VacateClickView leader;            //审批人
-    private VacateClickView vacateStartTime;   //请假开始时间
-    private VacateClickView vacateEndTime;     //请假结束时间
+    private MaterialCalendarView materialCalendarView;
+    private AttendPopup attendPopup;
+    private List<AttendDetailInfo> list = new ArrayList<AttendDetailInfo>();
 
-    private SharedPreferences mPref;
-    // 用来保存年月日：小时，分钟
-    private int mYear;
-    private int mMonth;
-    private int mDay;
-    private int mHour;
-    private int mMinute;
-
+    private RecyclerView recyclerView;
+    private AttendDetailAdapter adapter;
+    private LinearLayoutManager manager;
+    private View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_vacate, null);
+            rootView = inflater.inflate(R.layout.index2, null);
         }
         ViewGroup parent = (ViewGroup) rootView.getParent();
         if (parent != null) {
             parent.removeView(rootView);
         }
-
-        mPref = getContext().getSharedPreferences("config", getContext().MODE_PRIVATE);
         initView();
-        initClass();
-        initLeader();
-        initStartTime();
-        initStopTime();
-
         return rootView;
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        etContent.setText("");
     }
 
     private void initView() {
-        etContent = (EditText) rootView.findViewById(R.id.et_content);
-        sumbit = (Button) rootView.findViewById(R.id.sumbit);
-        vacateType = (VacateClickView) rootView.findViewById(R.id.lcv_class_style);
-        leader = (VacateClickView) rootView.findViewById(R.id.lcv_leader);
-        vacateEndTime = (VacateClickView) rootView.findViewById(R.id.lcv_stopTime);
-        vacateStartTime = (VacateClickView) rootView.findViewById(R.id.lcv_startTime);
-        sumbit.setOnClickListener(this);
-    }
-
-    /**
-     * 请假结束时间
-     */
-    // 时间格式
-    public String timeFormat(int value) {
-        return value >= 10 ? "" + value : "0" + value;
-    }
-
-    private void initStopTime() {
-        // 获得当前的日期：
-        final Calendar currentDate = Calendar.getInstance();
-        mYear = currentDate.get(Calendar.YEAR);
-        mMonth = currentDate.get(Calendar.MONTH);
-        mDay = currentDate.get(Calendar.DAY_OF_MONTH);
-        mHour = currentDate.get(Calendar.HOUR);
-        mMinute = currentDate.get(Calendar.MINUTE);
-        vacateEndTime.setTitle("结束时间:");
-        vacateEndTime.setTime("选择结束时间");
-        vacateEndTime.setDate("");
-        vacateEndTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new TimePickerDialog(getContext(),
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker v, int hour,
-                                                  int minute) {
-                                vacateEndTime.setTime(String.format("%s:%s",
-                                        timeFormat(hour), timeFormat(minute)));
-                            }
-                        }, mHour, mMinute, true).show();
-
-                new DatePickerDialog(getContext(),
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker view, int year,
-                                                  int month, int day) {
-                                vacateEndTime.setDate(String.format("%d-%s-%s", year,
-                                        timeFormat(month + 1), timeFormat(day)));
-                            }
-                        }, mYear, mMonth, mDay).show();
-            }
-        });
-    }
-
-    /**
-     * 请假开始时间
-     */
-    private void initStartTime() {
-        // 获得当前的日期：
-        final Calendar currentDate = Calendar.getInstance();
-        mYear = currentDate.get(Calendar.YEAR);
-        mMonth = currentDate.get(Calendar.MONTH);
-        mDay = currentDate.get(Calendar.DAY_OF_MONTH);
-        mHour = currentDate.get(Calendar.HOUR);
-        mMinute = currentDate.get(Calendar.MINUTE);
-        initView();
-        vacateStartTime.setTitle("开始时间:");
-        vacateStartTime.setTime("选择开始时间");
-        vacateStartTime.setDate("");
-        vacateStartTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new TimePickerDialog(getContext(),
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker v, int hour,
-                                                  int minute) {
-                                vacateStartTime.setTime(String.format("%s:%s",
-                                        timeFormat(hour), timeFormat(minute)));
-                                // System.out.println(timeFormat(hour)+timeFormat(minute));
-                            }
-                        }, mHour, mMinute, true).show();
-                new DatePickerDialog(getContext(),
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker view, int year,
-                                                  int month, int day) {
-                                vacateStartTime.setDate(String.format("%d-%s-%s",
-                                        year, timeFormat(month + 1),
-                                        timeFormat(day)));
-                                // System.out.println("ddd");
-                            }
-                        }, mYear, mMonth, mDay).show();
-            }
-        });
-    }
-
-    /**
-     * 审批领导
-     */
-    private String[] leader_items = new String[]{"冯海锋", "老总", "经理"};
-
-    private void initLeader() {
-        initView();
-        leader.setTitle("审批领导:");
-        leader.setTime("选择审批领导");
-        leader.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                showLeaderChooseDailog();
-            }
-        });
-    }
-
-    protected void showLeaderChooseDailog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        final int leaderP = mPref.getInt("leader", 0);
-        builder.setSingleChoiceItems(leader_items, leaderP,
-                new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int leaderWhich) {
-                        dialog.dismiss();
-                        leader.setTime(leader_items[leaderWhich]);
-                    }
-                });
-        builder.show();
-    }
-
-    /**
-     * 请假类型
-     */
-    private String[] leave_items = new String[]{"事假", "病假", "婚假"};
-
-    private void initClass() {
-        initView();
-        vacateType.setTitle("请假类型:");
-        vacateType.setTime("选择请假类型");
-        vacateType.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showClassChooseDailog();
-            }
-        });
-    }
-
-    /*
-     * 弹出类型选项
-     */
-    protected void showClassChooseDailog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        int style = mPref.getInt("address_style", 0);// 读取保存的style
-        builder.setSingleChoiceItems(leave_items, style,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int classWhich) {
-                        dialog.dismiss();// 让dialog消失
-                        vacateType.setTime(leave_items[classWhich]);
-                    }
-                });
-        builder.show();
+        materialCalendarView = (MaterialCalendarView) rootView.findViewById(R.id.calendarView);
+        materialCalendarView.setOnDateChangedListener(this);
     }
 
     @Override
-    public void onClick(View view) {
-        initView();
-        TextView tvClass = vacateType.getTvTime();
-        TextView tvLeader = leader.getTvTime();
-        String textClass = (String) tvClass.getText();
-        String textLeader = (String) tvLeader.getText();
+    public void onDateSelected(MaterialCalendarView widget, CalendarDay date, boolean selected) {
+        String thisDate = DateUtil.date2String(getSelectedDatesString(), "yyyy-MM-dd");
+        AttendDetailHttpHelper.getAttendDetailById(thisDate, STATIC_INFO.EMPLOYEE_ID,this);
+        attendPopup = new AttendPopup(getActivity(),list);
+        attendPopup.showPopupWindow();
+    }
 
-        TextView TtvStop = vacateEndTime.getTvTime();
-        TextView DtvStop = vacateEndTime.getTvDate();
-        String textStopTime = (String) TtvStop.getText();
-        String textStopDate = (String) DtvStop.getText();
+    @Override
+    public void onMonthChanged(MaterialCalendarView widget, CalendarDay date) {
 
-        TextView TtvStart = vacateStartTime.getTvTime();
-        TextView DtvStart = vacateStartTime.getTvDate();
-        String textStartTime = (String) TtvStart.getText();
-        String textStartDate = (String) DtvStart.getText();
-
-        String startDateTime = textStartDate + " " + textStartTime;
-        String stopDateTime = textStopDate + " " + textStopTime;
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd hh:mm");
-        Date startTime = null;
-        Date stopTime = null;
-        try {
-            startTime = sdf.parse(startDateTime);
-            stopTime = sdf.parse(stopDateTime);
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        if (textClass.equals("选择请假类型")) {
-            Toast.makeText(getContext(), "请选择请假类型", Toast.LENGTH_LONG).show();
-        } else if (textLeader.equals("选择审批领导")) {
-            Toast.makeText(getContext(), "请选择审批领导", Toast.LENGTH_LONG).show();
-        } else if (textStartTime.equals("选择开始时间")) {
-            Toast.makeText(getContext(), "请选择开始时间", Toast.LENGTH_LONG).show();
-        } else if (textStopTime.equals("选择结束时间")) {
-            Toast.makeText(getContext(), "请选择结束时间", Toast.LENGTH_LONG).show();
-        } else if (startTime.getTime() >= stopTime.getTime()) {
-            Toast.makeText(getContext(), "结束时间必须大于开始时间", Toast.LENGTH_LONG).show();
-        } else if (TextUtils.isEmpty(etContent.getText())) {
-            Toast.makeText(getContext(), "请输入请假原因", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(getContext(), "提交成功", Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
     public void onFragmentActivityResult(int requestCode, int resultCode, Intent data) {
 
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        if (data instanceof List) {
+            list.clear();
+            list.addAll((Collection<? extends AttendDetailInfo>) data);
+        }
+    }
+
+    /**
+     * 获取某个日期的毫秒数
+     */
+    private long getSelectedDatesString() {
+        CalendarDay date = materialCalendarView.getSelectedDate();
+
+        if (date == null) {
+            return 0;
+//            return null;
+        }
+//        return FORMATTER.format(date.getDate());
+        return date.getCalendar().getTimeInMillis();
     }
 }

@@ -3,9 +3,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/tab_bgcolor">
 
     <com.chengang.newcheck.widget.VacateClickView
+        android:paddingTop="10dp"
         android:id="@+id/lcv_class_style"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -16,6 +18,7 @@
         android:layout_height="wrap_content" />
 
     <com.chengang.newcheck.widget.VacateClickView
+        android:paddingTop="10dp"
         android:id="@+id/lcv_startTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -28,9 +31,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
+        android:layout_marginLeft="20dp"
         android:text="详细内容:"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="20dp"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,7 +42,7 @@
         android:layout_weight="1">
         <EditText
             android:id="@+id/et_content"
-            android:layout_width="320dp"
+            android:layout_width="345dp"
             android:layout_height="100dp"
             android:layout_marginTop="10dp"
             android:gravity="left|top"

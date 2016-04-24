@@ -66,7 +66,7 @@
                 android:layout_marginTop="20dp"
                 android:clickable="true"
                 android:drawablePadding="0dp"
-                android:drawableRight="@mipmap/topbt2"
+                android:drawableRight="@mipmap/ic_chevron_right_black_18dp"
                 android:gravity="center"
                 android:text="选择考勤类别"
                 android:textColor="#f00"
@@ -86,8 +86,8 @@
 
             <ImageButton
                 android:id="@+id/ib_camera"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:layout_below="@id/tv_latitude"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
@@ -118,7 +118,7 @@
                 android:layout_alignRight="@id/layout_clock"
                 android:layout_below="@id/gv_photo"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="15dp"
                 android:background="@drawable/shape_edittext"
                 android:gravity="top|left"
                 android:hint="请输入考勤备注"
