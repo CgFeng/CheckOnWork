@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void switchToSecond() {
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, (Fragment) fragmentList.get(1)).commit();
-        toolbar.setTitle("请假");
+        toolbar.setTitle("考勤记录");
     }
 
     /**

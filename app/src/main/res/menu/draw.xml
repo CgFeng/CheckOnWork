@@ -10,7 +10,7 @@
         <item
             android:id="@+id/navItem2"
             android:icon="@drawable/ic_class_black_18dp"
-            android:title="申请请假"/>
+            android:title="考勤记录"/>
 
         <item
             android:id="@+id/navItem3"
