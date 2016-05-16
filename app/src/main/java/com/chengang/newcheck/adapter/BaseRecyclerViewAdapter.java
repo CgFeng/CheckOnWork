@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * recyclerView基类
- * Created by urcha on 2016/4/17.
+ * Created by fengchengang on 2016/4/17.
  */
 public abstract class BaseRecyclerViewAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH>
         implements View.OnClickListener{
@@ -31,6 +31,8 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends RecyclerView.ViewHol
         mLayoutInflater =  LayoutInflater.from(mContext);
     }
 
+    protected abstract int getViewResId();
+    protected abstract VH initViewHolder(View view);
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mLayoutInflater.inflate(getViewResId(), parent, false);
@@ -38,7 +40,7 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends RecyclerView.ViewHol
         return initViewHolder(view);
     }
 
-
+    protected abstract void onBindData(VH holder, T data, int position);
     @Override
     public void onBindViewHolder(VH holder, int position) {
         T data = datas.get(position);
@@ -52,11 +54,10 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends RecyclerView.ViewHol
         return datas == null ? 0 : datas.size();
     }
 
-    protected abstract int getViewResId();
 
-    protected abstract VH initViewHolder(View view);
 
-    protected abstract void onBindData(VH holder, T data, int position);
+
+
 
     @Override
     public void onClick(View v) {

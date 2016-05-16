@@ -17,6 +17,9 @@ public class DICT {
     //登录失败显示信息--登录失败
     public static final String LOGIN_FAILURE_INFO ="登录失败";
 
+    //提交请假显示信息--成功
+    public static final String VACATE_SUCCESS_INFO ="请假成功";
+
     //考勤状态--正常
     public static final String ATTEND_NORMAL = "1";
 

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,17 +21,24 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.chengang.drawerlayoutdemo.R;
+import com.chengang.newcheck.common.DICT;
+import com.chengang.newcheck.http.VacateHttpHelper;
+import com.chengang.newcheck.ui.MainActivity;
+import com.chengang.newcheck.utils.DateUtil;
+import com.chengang.newcheck.utils.StringUtil;
 import com.chengang.newcheck.widget.VacateClickView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by 陈岗 on 2015/10/22.
  */
-public class index2 extends Fragment implements View.OnClickListener{
+public class index2 extends Fragment implements View.OnClickListener,Observer{
     private View rootView;
     private Button sumbit;
     private EditText etContent;
@@ -242,6 +250,7 @@ public class index2 extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View view) {
         initView();
+        String reason =etContent.getText().toString();
         TextView tvClass = vacateType.getTvTime();
         TextView tvLeader = leader.getTvTime();
         String textClass = (String) tvClass.getText();
@@ -260,16 +269,12 @@ public class index2 extends Fragment implements View.OnClickListener{
         String startDateTime = textStartDate + " " + textStartTime;
         String stopDateTime = textStopDate + " " + textStopTime;
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd hh:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd hh:mm:ss");
         Date startTime = null;
         Date stopTime = null;
-        try {
-            startTime = sdf.parse(startDateTime);
-            stopTime = sdf.parse(stopDateTime);
+        startTime = DateUtil.string2Date(startDateTime,"yy-MM-dd hh:mm:ss");
+        stopTime = DateUtil.string2Date(stopDateTime, "yy-MM-dd hh:mm:ss");
 
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
         if (textClass.equals("选择请假类型")) {
             Toast.makeText(getContext(), "请选择请假类型", Toast.LENGTH_LONG).show();
         } else if (textLeader.equals("选择审批领导")) {
@@ -283,7 +288,19 @@ public class index2 extends Fragment implements View.OnClickListener{
         } else if (TextUtils.isEmpty(etContent.getText())) {
             Toast.makeText(getContext(), "请输入请假原因", Toast.LENGTH_LONG).show();
         } else {
-            Toast.makeText(getContext(), "提交成功", Toast.LENGTH_LONG).show();
+            VacateHttpHelper.submitVacate(DateUtil.date2String(startTime.getTime(),"yy-MM-dd hh:mm:ss"),
+                                          DateUtil.date2String(startTime.getTime(),"yy-MM-dd hh:mm:ss"),
+                                          reason,this);
+        }
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        if((StringUtil.isSame((String) data,"TRUE"))){
+            StringUtil.myToast(getContext(), DICT.VACATE_SUCCESS_INFO);
+        }else{
+            //登录失败
+            StringUtil.myToast(getContext(),"请假失败");
         }
     }
 }

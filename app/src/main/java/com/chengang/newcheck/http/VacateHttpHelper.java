@@ -17,21 +17,28 @@ import cz.msebera.android.httpclient.Header;
 /**
  * Created by fengchengang on 2016/3/20.
  */
-public class LoginHttpHelper extends BaseHttpHelper {
+public class VacateHttpHelper extends BaseHttpHelper {
 
     private static final ObservableHelper observableHelper = new ObservableHelper();
 
     /**
-     * 登录
-     * @param login    登录信息
+     * 提交请假
+     * @param start
+     * @param end
+     * @param reason
      * @param observer
      */
-    public static void submitLogin(Login login, final Observer observer) {
-        String targetUrl = BASEURL + "employee/login";//登录url
+    public static void submitVacate(String start,String end,String reason, final Observer observer) {
+        String targetUrl = BASEURL + "vacate/create";
 
         RequestParams params = new RequestParams();
-        params.put("mobile", login.getAccount());
-        params.put("password", login.getPassword());
+        params.put("companyId", STATIC_INFO.COMPANY_ID);
+        params.put("employeeId", STATIC_INFO.EMPLOYEE_ID);
+        params.put("typeId", "1");
+        params.put("managerId", "2");
+        params.put("start", start);
+        params.put("end", end);
+        params.put("reason", reason);
 
         observableHelper.addObserver(observer);
         httpClient.post(targetUrl, params, new AsyncHttpResponseHandler() {
@@ -45,27 +52,12 @@ public class LoginHttpHelper extends BaseHttpHelper {
                         JSONObject userInfo = new JSONObject(s);
                         if (userInfo.getBoolean("success")) {
                             observableHelper.setChanged();
-                            markDownUserInfo(userInfo);
-                            observableHelper.notifyObservers(DICT.LOGIN_SUCCESS);
+                            observableHelper.notifyObservers("TRUE");
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
-            }
-
-            /**
-             * 记录登录后员工的信息
-             */
-            private void markDownUserInfo(JSONObject userInfo) {
-                STATIC_INFO.COMPANY_ID = userInfo.optString("companyId");
-                STATIC_INFO.COMPANY_NAME = userInfo.optString("companyName");
-                STATIC_INFO.DEPARTMENT_NAME = userInfo.optString("departmentName");
-                STATIC_INFO.EMPLOYEE_ID = userInfo.optString("employeeId");
-                STATIC_INFO.COMPANY_NAME = userInfo.optString("employeeName");
-                STATIC_INFO.EMPLOYEE_MOBILE = userInfo.optString("employeeMobile");
-                STATIC_INFO.COMPANY_LATITUDE = userInfo.optString("companyLatitude");
-                STATIC_INFO.COMPANY_LONGITUDE = userInfo.optString("companyLongitude");
             }
 
             @Override
