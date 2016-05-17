@@ -13,7 +13,9 @@ import android.view.ViewGroup;
 import com.chengang.drawerlayoutdemo.R;
 import com.chengang.newcheck.adapter.BaseRecyclerViewAdapter;
 import com.chengang.newcheck.adapter.NotificationAdapter;
+import com.chengang.newcheck.adapter.VacateDetailAdapter;
 import com.chengang.newcheck.bean.Notification;
+import com.chengang.newcheck.bean.VacateInfo;
 import com.chengang.newcheck.http.NoticeHttpHelper;
 import com.chengang.newcheck.ui.NoticeDetailActivity;
 import com.cjj.MaterialRefreshLayout;
@@ -33,21 +35,20 @@ public class FourthFragment extends Fragment implements BaseFragment,Observer,Ba
     private View rootView;
 
     private RecyclerView mRecyclerView;
-    private NotificationAdapter notificationAdapter;
+    private VacateDetailAdapter vacateDetailAdapter;
     private LinearLayoutManager linearLayoutManager;
     private MaterialRefreshLayout materialRefreshLayout;
-    private List<Notification> noticeList = new ArrayList<Notification>();
+    private List<VacateInfo> vacateList = new ArrayList<VacateInfo>();
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView=inflater.inflate(R.layout.fragment_fourth,null);
         initView();
-        notificationAdapter = new NotificationAdapter(noticeList, getActivity());
-        notificationAdapter.setonRecyclerViewItemClickListener(this);
-        mRecyclerView.setAdapter(notificationAdapter);
+        vacateDetailAdapter = new VacateDetailAdapter(vacateList, getActivity());
+        vacateDetailAdapter.setonRecyclerViewItemClickListener(this);
+        mRecyclerView.setAdapter(vacateDetailAdapter);
         mRecyclerView.setLayoutManager(linearLayoutManager);
-//        NoticeHttpHelper.getNoticeData(NoticeFragment.this);
 
         materialRefreshLayout.autoRefresh();
 
@@ -75,9 +76,9 @@ public class FourthFragment extends Fragment implements BaseFragment,Observer,Ba
     @Override
     public void update(Observable observable, Object data) {
         if (data instanceof List) {
-            noticeList.clear();
-            noticeList.addAll((Collection<? extends Notification>) data);
-            notificationAdapter.notifyDataSetChanged();
+            vacateList.clear();
+            vacateList.addAll((Collection<? extends VacateInfo>) data);
+            vacateDetailAdapter.notifyDataSetChanged();
             materialRefreshLayout.finishRefresh();
         }
     }
